@@ -91,7 +91,7 @@ bool isOrthogonal(const point &a,const point &b){
 }
 
 bool isOrthogonal(const line &a,const line &b){
-  return isOrthogonal(a.t-a.s,b.t-a.s);
+  return isOrthogonal(a.t-a.s,b.t-b.s);
 }
 
 //平行判定
