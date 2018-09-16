@@ -1,8 +1,8 @@
 #ifndef NTT_hpp
 #define NTT_hpp
 
-#include "LongLong.hpp"
-#include "Garner.hpp"
+#include "/Users/hisato2/Desktop/hpp_file/LongLong.hpp"
+#include "/Users/hisato2/Desktop/hpp_file/Garner.hpp"
 #include<bits/stdc++.h>
 using namespace std;
 typedef unsigned long long int ull;
@@ -63,8 +63,7 @@ public:
 #endif /*NTT_hpp*/
 
 //LongLong
-/*
-//sum
+/*sum
 void NTT::F(LL &a,const LL &b,const LL &mod){
     a+=b;
     a%=mod;
@@ -72,8 +71,7 @@ void NTT::F(LL &a,const LL &b,const LL &mod){
 */
 
 //long long
-/*
-//sum
+/*sum
 void NTTll::F(ll &a,const ll &b,const ll &mod){
     a+=b;
     a%=mod;

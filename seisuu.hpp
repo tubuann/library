@@ -1,5 +1,9 @@
 #ifndef seisuu_hpp
 #define seisuu_hpp
+
+
+
+
 #include<bits/stdc++.h>
 using namespace std;
 typedef unsigned long long int ull;

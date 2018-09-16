@@ -18,4 +18,4 @@ double end(){
   return diff;
 }
 
-#endif /* _hpp*/
+#endif /*time_hpp*/
