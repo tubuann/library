@@ -77,7 +77,7 @@ public:
             s=binary_search(s,t,i,S[i]);
             t=binary_search(s,t,i,S[i]+1);
         }
-        if(S==words[number[s]]){s++;}
+        if(s!=number.size() && S==words[number[s]]){s++;}
         return s;
     }
     
@@ -92,7 +92,7 @@ public:
         return words[number[s]];
     }
     
-    unsigned long size(){
+    unsigned long size() const {
         return number.size();
     }
 };
