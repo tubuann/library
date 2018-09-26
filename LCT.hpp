@@ -372,7 +372,7 @@ private:
 
   //[L,R]
   void update(I W,U u,ll L,ll R){
-    number(W);
+    //number(W);
     if(R<W.L() || W.R()<L){return;}
     if(L<=W.L() && W.R()<=R){
       W.u()=H(W.u(),u);
@@ -504,6 +504,33 @@ U LCT<T,U>::J(U u,bool down,ll s,ll m,ll t){
         u.F%=MOD;
         u.S*=-1;
     }
+    return u;
+}
+*/
+
+/*
+//一点加算区間和
+//(要素,要素)->要素 要素同士のマージ
+template<typename T,typename U>
+T LCT<T,U>::F(T a,T b){
+    return a+b;
+}
+
+//(区間,作用素)->要素 区間に作用素を作用させる [high,low]
+template<typename T,typename U>
+T LCT<T,U>::G(T a,ll high,ll low,U u){
+    return a+u;
+}
+
+//(作用素,作用素)->作用素 作用素同士のマージ
+template<typename T,typename U>
+U LCT<T,U>::H(U a,U b){
+    return a+b;
+}
+
+//(作用素,向き,区間)->作用素 作用素から木の作用素を作る true::down false::up
+template<typename T,typename U>
+U LCT<T,U>::J(U u,bool down,ll s,ll m,ll t){
     return u;
 }
 */
