@@ -245,7 +245,65 @@ public:
 };
 
 
-
+class hash_2d{
+private:
+    typedef unsigned long ul;
+    typedef unsigned long long int ull;
+    typedef vector_hash<ull> VH;
+    typedef pair<ul,ul> point;
+    ull mod,roll,mod2,roll2;
+    ul H,W;
+    ul h,w;
+    vector<vector<ull>> A;
+    vector<VH> mid; //縦横逆
+    vector<vector<ull>> hash;
+    
+    void mk_hash(){
+        hash.resize(H+1-h,vector<ull>(W+1-w,0));
+        vector<vector<ull>> midh(W+1-w,vector<ull>(H,0));
+        for(int i=0;i<H;i++){
+            VH v(A[i],mod,roll);
+            for(int t=0;t+w<=W;t++){
+                midh[t][i]=v.hash(t,t+w);
+            }
+        }
+        for(int t=0;t+w<=W;t++){
+            mid.push_back(VH(midh[t],mod2,roll2));
+            for(int i=0;i+h<=H;i++){
+                hash[i][t]=mid[t].hash(i,i+h);
+            }
+        }
+    }
+    
+public:
+    hash_2d(const vector<vector<ull>> &A,ul h,ul w,ull mod=1000000007,ull roll=837263374,ull mod2=1000006313,ull roll2=132847362):A(A),h(h),w(w),H(A.size()),W(A[0].size()),mod(mod),roll(roll),mod2(mod2),roll2(roll2){
+        mk_hash();
+    }
+    
+    vector<ull> & operator [] (const ul &s){
+        return hash[s];
+    }
+    
+    vector<point> find(ull a){
+        vector<point> ret;
+        for(int i=0;i<hash.size();i++){
+            for(int t=0;t<hash[i].size();t++){
+                if(hash[i][t]==a){ret.push_back({i,t});}
+            }
+        }
+        return ret;
+    }
+    
+    ul count(ull a){
+        ul ret=0;
+        for(int i=0;i<hash.size();i++){
+            for(int t=0;t<hash[i].size();t++){
+                if(hash[i][t]==a){ret++;}
+            }
+        }
+        return ret;
+    }
+};
 
 
 /*

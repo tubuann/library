@@ -8,6 +8,19 @@ typedef long long int ll;
 #define F first
 #define S second
 
+
+/*
+ //Mod_Intで行う場合
+ //showを使うならそれも変える
+ 
+ const R EPS=0;
+ 
+ inline T fabs(const T &a) const {return a;}
+ 
+ inline bool equals(const R &a,const R &b) const {
+    return fabs(a-b)<=EPS;
+ }
+ */
 template<typename T,typename R=double> //要素の型、実数の型 //両方とも実数型を推奨
 class Matrix{
 private:
@@ -506,3 +519,5 @@ public:
 
 
 #endif /*Matrix_hpp*/
+
+

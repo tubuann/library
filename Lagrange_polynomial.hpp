@@ -32,10 +32,10 @@ public:
     for(ul i=0;i<P.size();i++){
       T a=P[i].S;
       for(ul t=0;t<P.size();t++){
-	if(i==t){continue;}
-	a*=x-P[t].F;
-	assert(P[i].F!=P[t].F);
-	a/=P[i].F-P[t].F;
+          if(i==t){continue;}
+          a*=x-P[t].F;
+          assert(P[i].F!=P[t].F);
+          a/=P[i].F-P[t].F;
       }
       ret+=a;
     }

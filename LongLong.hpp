@@ -1,6 +1,7 @@
 #ifndef LongLong_hpp
 #define LongLong_hpp
 
+#include "Mod_Int.hpp"
 #include<bits/stdc++.h>
 using namespace std;
 typedef unsigned long long int ull;
@@ -13,12 +14,69 @@ typedef long long int ll;
 class LongLong{
 private:
     typedef LongLong LL;
+    typedef long long int ll;
     typedef unsigned long long int ull;
     typedef unsigned long ul;
-    const ull MX=1LL<<32;
-    const ull I=MX-1;
+    static const ull MX=1LL<<32;
+    static const ull I=MX-1;
+    static const ull MI=(1LL<<16)-1;
+    static const ll Inv=827676002;
+    static const ll A=2281701377;
     bool sign;
     deque<ull> N;
+    
+    
+    
+    template<long long mod=2483027969,long long primitive_root=3>
+    class NTT{
+    private:
+        typedef Mod_Int<mod> Int;
+        vector<Int> X;
+        
+        inline void mk_x(const ll &s){
+            ll size=s/2;
+            if(X.size()==size){return;}
+            Int R(primitive_root); R.mod_pow_equal((mod-1)/s);
+            X.resize(size);
+            X[0]=1;
+            for(int i=1;i<size;i++){(X[i]=X[i-1])*=R;}
+        }
+        
+        void FFT(vector<Int> &a,const ll &size){
+            for(int i=0,j=1;j+1<size;j++){
+                for(ll k=size>>1;k>(i^=k);k>>=1);
+                if(i>j){swap(a[i],a[j]);}
+            }
+            for(int i=1;i<size;i<<=1){
+                for(int j=0;j<size;j+=i<<1){
+                    for(int k=0;k<i;k++){
+                        Int z=a[i+j+k]*X[size/i/2*k];
+                        a[i+j+k]=a[j+k]-z;
+                        a[j+k]+=z;
+                    }
+                }
+            }
+        }
+        
+    public:
+        void Multiplication(vector<Int> &a,vector<Int> &b){
+            ll size=1;
+            while(size<a.size()+b.size()-1){size<<=1;}
+            mk_x(size);
+            a.resize(size,0);
+            b.resize(size,0);
+            FFT(a,size);
+            FFT(b,size);
+            for(int i=0;i<size;i++){b[i]*=a[i];}
+            FFT(b,size);
+            Int inv(1); inv/=size;
+            (a[0]=b[0])*=inv;
+            for(int i=1;i<size;i++){
+                (a[i]=b[size-i])*=inv;
+            }
+        }
+    };
+    
     
     inline int Sign() const {
         int ret=sign?1:-1;
@@ -42,7 +100,7 @@ private:
     inline void resize(ul i){N.resize(i);}
     
 public:
-    LongLong(const deque<ull> &N={},const bool &sign=true):N(N),sign(sign){}
+    LongLong(const deque<ull> &N={},const bool &sign=true):N(N),sign(sign){clean();}
     
     LongLong(ll n):N({}),sign(true){
         if(n==0){return;}
@@ -160,6 +218,7 @@ public:
         while(k--){
             N.push_front(0);
         }
+        if(K==0){return *this;}
         N.resize(N.size()+1);
         for(ll i=N.size()-2;i>=0;i--){
             N[i]<<=K;
@@ -181,7 +240,7 @@ public:
         while(N.size()>0 && k--){
             N.pop_front();
         }
-        if(N.size()==0){return *this;}
+        if(N.size()==0 || K==0){return *this;}
         N[0]>>=K;
         ull key=1; key<<=K; key--;
         for(ul i=1;i<N.size();i++){
@@ -274,7 +333,7 @@ public:
                 bool k=false;
                 for(ul i=0;i<L.Size();i++){
                     N[i]+=MX;
-                    N[i]-=L.node(i)-k;
+                    N[i]-=L.node(i)+k;
                     k=false;
                     if(N[i]<MX){k=true;}
                     else{N[i]-=MX; k=false;}
@@ -304,7 +363,7 @@ public:
             bool k=false;
             for(ul i=0;i<L.Size();i++){
                 N[i]+=MX;
-                N[i]-=L.node(i)-k;
+                N[i]-=L.node(i)+k;
                 k=false;
                 if(N[i]<MX){k=true;}
                 else{N[i]-=MX; k=false;}
@@ -433,31 +492,77 @@ public:
     }
     
     LongLong & operator *= (const LL &L){
-        N=((*this)*L).N;
-        int s=sign; s+=L.sign;
         if(!L.sign){sign=!sign;}
+        if(*this==0){return *this;}
+        if(L==0){N.clear(); return *this;}
+        if(L.N.size()==1 && L.N[0]==1){return *this;}
+        NTT<2281701377,3> ntt1;
+        NTT<2483027969,3> ntt2;
+        vector<Mod_Int<2281701377>> a1(N.size()*2);
+        vector<Mod_Int<2483027969>> a2(N.size()*2);
+        vector<Mod_Int<2281701377>> b1(L.N.size()*2);
+        vector<Mod_Int<2483027969>> b2(L.N.size()*2);
+        for(int i=0;i<N.size();i++){
+            a1[i*2]=N[i]&MI;
+            a1[i*2+1]=N[i]>>16;
+            a2[i*2]=N[i]&MI;
+            a2[i*2+1]=N[i]>>16;
+        }
+        for(int i=0;i<L.N.size();i++){
+            b1[i*2]=L.N[i]&MI;
+            b1[i*2+1]=L.N[i]>>16;
+            b2[i*2]=L.N[i]&MI;
+            b2[i*2+1]=L.N[i]>>16;
+        }
+        ntt1.Multiplication(a1,b1);
+        ntt2.Multiplication(a2,b2);
+        N.resize(a1.size()/2+5);
+        for(int i=0;i<N.size();i++){N[i]=0;}
+        for(ul i=0;i<a1.size();i+=2){
+            ll k=a1[i].a;
+            (a2[i]-=k)*=Inv;
+            k+=a2[i].a*A;
+            N[i>>1]+=k&I;
+            N[(i>>1)+1]+=k>>32;
+        }
+        for(ul i=1;i<a1.size();i+=2){
+            ull k=a1[i].a;
+            (a2[i]-=k)*=Inv;
+            k+=a2[i].a*=A;
+            N[i>>1]+=(k&MI)<<16;
+            N[(i>>1)+1]+=(k>>16)&I;
+            N[(i>>1)+2]+=k>>48;
+        }
+        for(ul i=0;i+1<N.size();i++){
+            N[i+1]+=N[i]>>32;
+            N[i]&=I;
+        }
+        clean();
         return *this;
     }
     
     LongLong operator * (const LL &L) const {
-        LongLong ret;
-        ret.resize(N.size()+L.Size()+2);
-        for(ul i=0;i<N.size();i++){
-            for(ul t=0;t<L.Size();t++){
-                ull d=N[i]*L.node(t);
-                ret.N[i+t+1]+=d>>32;
-                ret.N[i+t]+=d&I;
-            }
-        }
-        for(ul i=0;i<ret.Size()-1;i++){
-            ret.N[i+1]+=ret.N[i]>>32;
-            ret.N[i]&=I;
-        }
-        ret.clean();
-        int s=sign; s+=L.sign;
-        ret.sign=s%2;
-        ret.sign=!ret.sign;
-        return ret;
+        LongLong ret(*this);
+        return ret*=L;
+        /*
+         ret.resize(N.size()+L.Size()+2);
+         for(ul i=0;i<N.size();i++){
+         for(ul t=0;t<L.Size();t++){
+         ull d=N[i]*L.node(t);
+         ret.N[i+t+1]+=d>>32;
+         ret.N[i+t]+=d&I;
+         }
+         }
+         for(ul i=0;i<ret.Size()-1;i++){
+         ret.N[i+1]+=ret.N[i]>>32;
+         ret.N[i]&=I;
+         }
+         ret.clean();
+         int s=sign; s+=L.sign;
+         ret.sign=s%2;
+         ret.sign=!ret.sign;
+         return ret;
+         */
     }
     
     LongLong & operator %= (LL L){
@@ -555,7 +660,6 @@ public:
         cout<<endl;
     }
 };
-    
 
 
 

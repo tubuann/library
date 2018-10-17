@@ -104,6 +104,25 @@ public:
     if(k!=1 && mod_pow(a,phi/k,mod)==1){phi/=k;}
     return phi;
   }
+    
+    //+-が答え
+    ll mod_sqrt(ll a,ll mod){
+        //assert(mod%8==3 || mod%8==5 || mod%8==7);
+        assert(mod_pow(a,(mod-1)/2,mod)==1);
+        if(mod%8==3 || mod%8==7){
+            return mod_pow(a,(mod+1)/4,mod);
+        }
+        if(mod%8==5){
+            if(mod_pow(a,(mod-1)/4,mod)==1){
+                return mod_pow(a,(mod+3)/8,mod);
+            }
+            else{
+                return mod_pow(2,(mod-1)/4,mod)*mod_pow(a,(mod+3)/8,mod)%mod;
+            }
+        }
+        assert(false);
+        return -1;
+    }
 };
 
 

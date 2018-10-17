@@ -45,7 +45,7 @@ struct Mod_Int{
         return ret;
     }
     
-    Mod_Int(ll A):a(A){
+    Mod_Int(ll A=1):a(A){
         a%=mod;
         if(a<0){a+=mod;}
     }
