@@ -1,5 +1,5 @@
-#ifndef weight_uft_hpp
-#define weight_uft_hpp
+#ifndef Comvex_Hull_Trick_hpp
+#define Comvex_Hull_Trick_hpp
 
 #include<bits/stdc++.h>
 using namespace std;
@@ -29,7 +29,7 @@ public:
     Comvex_Hull_Trick(){}
     
     void add_line(const line &L){
-        while(!D.empty() && D.back().F>=L.F){D.pop_back();}
+        while(!D.empty() && D.back().S==D.back().S){L.F=min(L.F,D.back().F); D.pop_back();}
         while(D.size()>=2 && !is_need(D[D.size()-2],D.back(),L)){D.pop_back();}
         D.push_back(L);
     }
@@ -71,4 +71,4 @@ public:
 
 
 
-#endif /*weight_uft_hpp*/
+#endif /*Comvex_Hull_Trick_hpp*/

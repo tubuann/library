@@ -130,7 +130,6 @@ template<typename T,typename U>
 T late_seg_tree<T,U>::I(T a,U b,ll l,ll r){
     return a+b*(r-l);
 }
-
 */
 
 
@@ -155,4 +154,27 @@ template<typename T,typename U>
 T late_seg_tree<T,U>::I(T a,U b,ll l,ll r){
     return a+((b.F+l*b.S)+(b.F+(r-1)*b.S))*(r-l)/2;
 }
+ */
+
+/*
+ //最小値、区間アップデート
+ template<typename T,typename U>
+ T late_seg_tree<T,U>::F(T a,T b){
+    return min(a,b);
+ }
+ 
+ template<typename T,typename U>
+ T late_seg_tree<T,U>::G(T a,U b,ll where){
+    return (b==err_U?a:b);
+ }
+ 
+ template<typename T,typename U>
+ U late_seg_tree<T,U>::H(U a,U b){
+    return (b==err_U?a:b);
+ }
+ 
+ template<typename T,typename U>
+ T late_seg_tree<T,U>::I(T a,U b,ll l,ll r){
+    return (b==err_U?a:b);
+ }
 */

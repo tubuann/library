@@ -14,19 +14,21 @@ private:
     ll mod;
     ll mx;
     vector<ll> F;
+    vector<ll> FR;
     
 public:
-    comb(ll mod=1000000007,ll mx=100000):mod(mod),mx(mx){
+    comb(ll mod=1000000007,ll mx=100000):mod(mod),mx(mx),F(mx+1,1),FR(mx+1,1){
         mk_F();
     }
     
     ll mod_pow(ll a,ll x){
         a%=mod;
         ll ans=1;
-        for(int i=0;i<63;i++){
-            if(x>>i&1){ans*=a; ans%=mod;}
+        while(x>0){
+            if(x&1){ans*=a; ans%=mod;}
             a*=a;
             a%=mod;
+            x>>=1;
         }
         return ans;
     }
@@ -50,19 +52,13 @@ public:
     }
     
     void mk_F(){
-        F={1};
-        ll a=1;
-        for(ll i=1;i<=mx;i++){
-            a*=i;
-            a%=mod;
-            F.push_back(a);
-        }
+        for(ll i=1;i<=mx;i++){F[i]=F[i-1]*i%mod; FR[i]=R(F[i]);}
     }
     
     ll c(ll n,ll k){
         if(n<k){return 0;}
         if(n==k || k==0){return 1;}
-        return F[n]*R(F[n-k])%mod*R(F[k])%mod;
+        return F[n]*FR[n-k]%mod*FR[k]%mod;
     }
     
     //mod must be prime

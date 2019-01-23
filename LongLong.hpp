@@ -272,7 +272,7 @@ public:
     }
     
     LongLong & operator |= (const LongLong &L){
-        N.resize(N.size(),L.Size());
+        N.resize(max(N.size(),L.Size()));
         for(ul i=0;i<L.Size();i++){
             N[i]|=L.node(i);
         }
