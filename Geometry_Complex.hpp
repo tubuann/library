@@ -77,7 +77,7 @@ struct Geometry{
     D area(const vector<P> &poly){
         D ans=0;
         for(int i=2;i<poly.size();i++){ans+=cross(poly[i-1]-poly[0],poly[i]-poly[0]);}
-        return ans/2;
+        return abs(ans)/2;
     }
     
     vector<P> convexhull(vector<P> pts){
