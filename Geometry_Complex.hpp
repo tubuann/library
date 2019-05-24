@@ -174,11 +174,9 @@ namespace Geometry{
         }
         return abs(ret)/2;
     }
+    
+    istream & operator >> (istream &i,P &p){D x,y; i>>x>>y; p={x,y}; return i;}
+    istream & operator >> (istream &i,C &p){D x,y; i>>x>>y>>p.S; p.F={x,y}; return i;}
 };
-
-using namespace Geometry;
-
-istream & operator >> (istream &i,P &p){D x,y; i>>x>>y; p={x,y}; return i;}
-istream & operator >> (istream &i,C &p){D x,y; i>>x>>y>>p.S; p.F={x,y}; return i;}
 
 #endif /*Geometry_Complex_hpp*/
