@@ -6,11 +6,13 @@ using namespace std;
 #define F first
 #define S second
 
-template<typename D=long double,typename P=complex<long double>>
-struct Geometry{
+namespace Geometry{
+    typedef long double D;
+    typedef complex<long double> P;
+    typedef pair<P,D> C;
+    
     const D EPS=1e-9;
     const D PI=asin(1)*2;
-    typedef pair<P,D> C;
     
     const static bool comp(const P &p1,const P &p2){return p1.real()==p2.real()?p1.imag()<p2.imag():p1.real()<p2.real();}
     
@@ -32,10 +34,6 @@ struct Geometry{
     
     bool intersectSS(P p1,P p2,P p3,P p4){return (dot(p2-p1,p3-p1)<-EPS && dot(p2-p1,p4-p1)<-EPS) || (dot(p1-p2,p3-p2)<-EPS && dot(p1-p2,p4-p2)<-EPS)?false:intersectSL(p1,p2,p3,p4) && intersectSL(p3,p4,p1,p2);}
     
-    bool intersectShL(P p1,P p2,P vec){vec/=abs(vec); return intersectSL(p1,p2,vec) && crosspointLL(p1/vec,p2/vec,vec/vec).real()>-EPS;}
-    
-    bool intersectShL(P p1,P p2,P p3,P p4){return intersectShL(p1-p3,p2-p3,p4-p3);}
-    
     D distLP(P vec,P x){return abs((x/vec).imag())*abs(vec);}
     
     D distLP(P p1,P p2,P x){return distLP(p2-p1,x-p1);}
@@ -49,6 +47,10 @@ struct Geometry{
     P crosspointLL(P p1,P p2,P p3,P p4){return p4+crosspointLL(p1-p4,p2-p4,p3-p4);}
     
     P crosspointSS(P p1,P p2,P p3,P p4){return distSP(p1,p2,p3)<EPS?p3:distSP(p1,p2,p4)<EPS?p4:crosspointLL(p1,p2,p3,p4);}
+    
+    bool intersectShL(P p1,P p2,P vec){vec/=abs(vec); return intersectSL(p1,p2,vec) && crosspointLL(p1/vec,p2/vec,vec/vec).real()>-EPS;}
+    
+    bool intersectShL(P p1,P p2,P p3,P p4){return intersectShL(p1-p3,p2-p3,p4-p3);}
     
     //1::in,0::on edge,-1::out
     int contain(const vector<P> &poly,const P &p){
@@ -166,7 +168,7 @@ struct Geometry{
                 else{
                     ret+=(abs(a)<c.S?cross(a,A[0]):c.S*c.S*arg(A[0]/a));
                     ret+=(abs(b)<c.S?cross(A.back(),b):c.S*c.S*arg(b/A.back()));
-                    if(A.size()==2){ret+=cross(A[0],A[1]);}
+                    ret+=cross(A[0],A.back());
                 }
             }
         }
@@ -174,13 +176,9 @@ struct Geometry{
     }
 };
 
-
-typedef long double D;
-typedef complex<long double> P;
-typedef pair<P,D> C;
+using namespace Geometry;
 
 istream & operator >> (istream &i,P &p){D x,y; i>>x>>y; p={x,y}; return i;}
 istream & operator >> (istream &i,C &p){D x,y; i>>x>>y>>p.S; p.F={x,y}; return i;}
-
 
 #endif /*Geometry_Complex_hpp*/
