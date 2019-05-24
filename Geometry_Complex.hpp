@@ -10,6 +10,7 @@ template<typename D=long double,typename P=complex<long double>>
 struct Geometry{
     const D EPS=1e-9;
     const D PI=asin(1)*2;
+    typedef pair<P,D> C;
     
     const static bool comp(const P &p1,const P &p2){return p1.real()==p2.real()?p1.imag()<p2.imag():p1.real()<p2.real();}
     
@@ -97,10 +98,8 @@ struct Geometry{
         return ret;
     }
     
-    /* Circle = pair<P,D> = {center,r} */
-    
     //4::seperate,3::circumscribe,2::intersect,1::inscribe,0::contain,-1::same
-    int intersectCC(pair<P,D> c1,pair<P,D> c2){
+    int intersectCC(C c1,C c2){
         D d=abs(c1.F-c2.F),r=c1.S+c2.S,dif=abs(c2.S-c1.S);
         if(d<EPS && dif<EPS){return -1;}
         if(d-r>EPS){return 4;}
@@ -110,7 +109,7 @@ struct Geometry{
         return 0;
     }
     
-    vector<P> crosspointLC(P p1,P p2,pair<P,D> c){
+    vector<P> crosspointLC(P p1,P p2,C c){
         vector<P> ret;
         P pr=project(p1,p2,c.F);
         D d=distLP(p1,p2,c.F);
@@ -122,13 +121,13 @@ struct Geometry{
         return ret;
     }
     
-    vector<P> crosspointSC(P p1,P p2,pair<P,D> c){
+    vector<P> crosspointSC(P p1,P p2,C c){
         vector<P> ret;
         for(auto &I:crosspointLC(p1,p2,c)){if(distSP(p1,p2,I)<EPS){ret.push_back(I);}}
         return ret;
     }
     
-    vector<P> crosspointCC(pair<P,D> c1,pair<P,D> c2){
+    vector<P> crosspointCC(C c1,C c2){
         vector<P> ret;
         P vec=c2.F-c1.F;
         D base=(c1.S*c1.S+norm(vec)-c2.S*c2.S)/(2*abs(vec));
@@ -139,9 +138,9 @@ struct Geometry{
         return ret;
     }
     
-    vector<P> tangentCP(pair<P,D> c,P p){return crosspointCC(c,pair<P,D>(p,sqrt(norm(c.F-p)-c.S*c.S)));}
+    vector<P> tangentCP(C c,P p){return crosspointCC(c,C(p,sqrt(norm(c.F-p)-c.S*c.S)));}
     
-    vector<pair<P,P>> tangentCC(pair<P,D> c1,pair<P,D> c2){
+    vector<pair<P,P>> tangentCC(C c1,C c2){
         vector<pair<P,P>> ret;
         P d=c2.F-c1.F;
         for(D i:{-1,1}){
@@ -156,7 +155,7 @@ struct Geometry{
         return ret;
     }
     
-    D area(const vector<P> &poly,pair<P,D> c){
+    D area(const vector<P> &poly,C c){
         D ret=0;
         for(int i=0;i<poly.size();i++){
             P a=poly[i]-c.F,b=poly[(i+1)%poly.size()]-c.F;
@@ -178,10 +177,10 @@ struct Geometry{
 
 typedef long double D;
 typedef complex<long double> P;
+typedef pair<P,D> C;
 
 istream & operator >> (istream &i,P &p){D x,y; i>>x>>y; p={x,y}; return i;}
 istream & operator >> (istream &i,pair<P,D> &p){D x,y; i>>x>>y>>p.S; p.F={x,y}; return i;}
-
 
 
 #endif /*Geometry_Complex_hpp*/
