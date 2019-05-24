@@ -180,7 +180,7 @@ typedef complex<long double> P;
 typedef pair<P,D> C;
 
 istream & operator >> (istream &i,P &p){D x,y; i>>x>>y; p={x,y}; return i;}
-istream & operator >> (istream &i,pair<P,D> &p){D x,y; i>>x>>y>>p.S; p.F={x,y}; return i;}
+istream & operator >> (istream &i,C &p){D x,y; i>>x>>y>>p.S; p.F={x,y}; return i;}
 
 
 #endif /*Geometry_Complex_hpp*/
