@@ -13,6 +13,7 @@ namespace Geometry{
     
     const D EPS=1e-9;
     const D PI=asin(1)*2;
+    const D INF=1e18;
     
     const static bool comp(const P &p1,const P &p2){return p1.real()==p2.real()?p1.imag()<p2.imag():p1.real()<p2.real();}
     
@@ -173,6 +174,47 @@ namespace Geometry{
             }
         }
         return abs(ret)/2;
+    }
+    
+    //反時計回り
+    D diameter(const vector<P> &poly){
+        D ret=0;
+        ll l=0,r=0,n=poly.size();
+        if(n==2){return abs(poly[0]-poly[1]);}
+        for(int i=0;i<n;i++){
+            if(comp(poly[l],poly[i])){l=i;}
+            if(comp(poly[i],poly[r])){r=i;}
+        }
+        ll sl=r,sr=l;
+        while(sl!=l || sr!=r){
+            ret=max(ret,abs(poly[r]-poly[l]));
+            if(cross(poly[(l+1)%n]-poly[l],poly[(r+1)%n]-poly[r])<0){(++l)%=n;}
+            else{(++r)%=n;}
+        }
+        return ret;
+    }
+    
+    D closestpair(vector<P> pt){
+        sort(pt.begin(),pt.end(),comp);
+        D ret=INF;
+        for(ll i=1;i<pt.size();i<<=1){
+            for(ll j=0;i+j<pt.size();j+=i*2){
+                ll m=i+j;
+                vector<P> R;
+                D l=-INF,r=INF;
+                for(ll k=j;k<m;k++){l=max(l,pt[k].real());}
+                for(ll k=0;m+k<pt.size() && k<i;k++){r=min(r,pt[m+k].real());}
+                for(ll k=0;m+k<pt.size() && k<i;k++){if(pt[m+k].real()-l<ret){R.push_back(pt[m+k]);}}
+                ll idx=0;
+                for(ll k=j;k<m;k++){
+                    if(r-pt[k].real()>ret){continue;}
+                    while(idx<R.size() && pt[k].imag()-R[idx].imag()>ret){idx++;}
+                    for(ll n=idx;n<R.size() && R[n].imag()-pt[k].imag()<ret;n++){ret=min(ret,abs(R[n]-pt[k]));}
+                }
+                inplace_merge(pt.begin()+j,pt.begin()+m,j+i*2<pt.size()?pt.begin()+j+2*i:pt.end(),[](const P &a,const P &b){return a.imag()==b.imag()?a.real()<b.real():a.imag()<b.imag();});
+            }
+        }
+        return ret;
     }
     
     istream & operator >> (istream &i,P &p){D x,y; i>>x>>y; p={x,y}; return i;}
