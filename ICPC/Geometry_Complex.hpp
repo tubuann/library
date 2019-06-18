@@ -5,6 +5,7 @@
 using namespace std;
 #define F first
 #define S second
+typedef long long ll;
 
 namespace Geometry{
     typedef long double D;
@@ -15,7 +16,15 @@ namespace Geometry{
     const D PI=asin(1)*2;
     const D INF=1e18;
     
-    const static bool comp(const P &p1,const P &p2){return p1.real()==p2.real()?p1.imag()<p2.imag():p1.real()<p2.real();}
+    static bool comp(const P &p1,const P &p2){
+        if(p1.real()==p2.real()){return p1.imag()<p2.imag();}
+        return p1.real()<p2.real();
+    }
+    
+    static bool comp_y(const P &p1,const P &p2){
+        if(p1.imag()==p2.imag()){return p1.real()<p2.real();}
+        return p1.imag()<p2.imag();
+    }
     
     D dot(P p1,P p2){return p1.real()*p2.real()+p1.imag()*p2.imag();}
     
@@ -29,74 +38,113 @@ namespace Geometry{
     
     P reflect(P p1,P p2,P x){return p1+reflect(p2-p1,x-p1);}
     
-    bool intersectSL(P p1,P p2,P vec){vec/=abs(vec); p1/=vec; p2/=vec; return (p1.imag()<EPS && p2.imag()>-EPS) || (p1.imag()>-EPS && p2.imag()<EPS);}
+    bool intersectSL(P p1,P p2,P vec){
+        vec/=abs(vec); p1/=vec; p2/=vec;
+        return (p1.imag()<EPS && p2.imag()>-EPS) || (p1.imag()>-EPS && p2.imag()<EPS);
+    }
     
     bool intersectSL(P p1,P p2,P p3,P p4){return intersectSL(p1-p4,p2-p4,p3-p4);}
     
-    bool intersectSS(P p1,P p2,P p3,P p4){return (dot(p2-p1,p3-p1)<-EPS && dot(p2-p1,p4-p1)<-EPS) || (dot(p1-p2,p3-p2)<-EPS && dot(p1-p2,p4-p2)<-EPS)?false:intersectSL(p1,p2,p3,p4) && intersectSL(p3,p4,p1,p2);}
+    bool intersectSS(P p1,P p2,P p3,P p4){
+        if(dot(p2-p1,p3-p1)<-EPS && dot(p2-p1,p4-p1)<-EPS){return false;}
+        if(dot(p1-p2,p3-p2)<-EPS && dot(p1-p2,p4-p2)<-EPS){return false;}
+        return intersectSL(p1,p2,p3,p4) && intersectSL(p3,p4,p1,p2);
+    }
     
     D distLP(P vec,P x){return abs((x/vec).imag())*abs(vec);}
     
     D distLP(P p1,P p2,P x){return distLP(p2-p1,x-p1);}
     
-    D distSP(P p1,P p2,P x){return dot(p2-p1,x-p1)<-EPS?abs(x-p1):dot(p1-p2,x-p2)<-EPS?abs(x-p2):distLP(p1,p2,x);}
+    D distSP(P p1,P p2,P x){
+        if(dot(p2-p1,x-p1)<-EPS){return abs(x-p1);}
+        if(dot(p1-p2,x-p2)<-EPS){return abs(x-p2);}
+        return distLP(p1,p2,x);
+    }
     
-    D distSS(P p1,P p2,P p3,P p4){return intersectSS(p1,p2,p3,p4)?0.0:min(min(distSP(p1,p2,p3),distSP(p1,p2,p4)),min(distSP(p3,p4,p1),distSP(p3,p4,p2)));}
+    D distSS(P p1,P p2,P p3,P p4){
+        if(intersectSS(p1,p2,p3,p4)){return 0.0;}
+        return min({distSP(p1,p2,p3),distSP(p1,p2,p4),
+            distSP(p3,p4,p1),distSP(p3,p4,p2)});
+    }
     
-    P crosspointLL(P p1,P p2,P vec){return abs(cross(p2-p1,vec))<EPS?vec:vec*cross(p2-p1,p2)/cross(p2-p1,vec);}
+    P crosspointLL(P p1,P p2,P vec){
+        if(abs(cross(p2-p1,vec))<EPS){return vec;}
+        return vec*cross(p2-p1,p2)/cross(p2-p1,vec);
+    }
     
-    P crosspointLL(P p1,P p2,P p3,P p4){return p4+crosspointLL(p1-p4,p2-p4,p3-p4);}
+    P crosspointLL(P p1,P p2,P p3,P p4){
+        return p4+crosspointLL(p1-p4,p2-p4,p3-p4);
+    }
     
-    P crosspointSS(P p1,P p2,P p3,P p4){return distSP(p1,p2,p3)<EPS?p3:distSP(p1,p2,p4)<EPS?p4:crosspointLL(p1,p2,p3,p4);}
+    P crosspointSS(P p1,P p2,P p3,P p4){
+        if(distSP(p1,p2,p3)<EPS){return p3;}
+        if(distSP(p1,p2,p4)<EPS){return p4;}
+        return crosspointLL(p1,p2,p3,p4);
+    }
     
-    bool intersectShL(P p1,P p2,P vec){vec/=abs(vec); return intersectSL(p1,p2,vec) && crosspointLL(p1/vec,p2/vec,vec/vec).real()>-EPS;}
+    bool intersectShL(P p1,P p2,P vec){
+        vec/=abs(vec);
+        return intersectSL(p1,p2,vec) &&
+        crosspointLL(p1/vec,p2/vec,vec/vec).real()>-EPS;
+    }
     
-    bool intersectShL(P p1,P p2,P p3,P p4){return intersectShL(p1-p3,p2-p3,p4-p3);}
+    bool intersectShL(P p1,P p2,P p3,P p4){
+        return intersectShL(p1-p3,p2-p3,p4-p3);
+    }
     
     //1::in,0::on edge,-1::out
     int contain(const vector<P> &poly,const P &p){
         vector<P> A={{65537,96847},{-24061,6701},{56369,-86509},{-93763,-78049},{56957,10007}};
-        vector<bool> cnt(5,false);
-        for(int i=1;i<=poly.size();i++){
-            if(distSP(poly[i-1],poly[i%poly.size()],p)<EPS){return 0;}
-            for(int j=0;j<5;j++){
-                if(intersectShL(poly[i-1],poly[i%poly.size()],p,p+A[j])){cnt[j]=!cnt[j];}
+        int s=A.size();
+        vector<bool> cnt(s,false);
+        for(int i=0;i<(int)poly.size();i++){
+            int k=(i+1)%poly.size();
+            if(distSP(poly[i],poly[k],p)<EPS){return 0;}
+            for(int j=0;j<s;j++){
+                if(intersectShL(poly[i],poly[k],p,p+A[j])){cnt[j]=!cnt[j];}
             }
         }
         int in=0;
-        for(int j=0;j<5;j++){if(cnt[j]){in++;}}
-        return in>=3?1:-1;
+        for(int j=0;j<s;j++){if(cnt[j]){in++;}}
+        return in>s/2?1:-1;
     }
     
     vector<P> convexcut(const vector<P> &poly,P p1,P p2){
         vector<P> ret;
-        for(int i=1;i<=poly.size();i++){
-            if(cross(p2-p1,poly[i-1]-p1)>-EPS){ret.push_back(poly[i-1]);}
-            if(intersectSL(poly[i-1],poly[i%poly.size()],p1,p2) && distLP(p1,p2,poly[i-1])>EPS && distLP(p1,p2,poly[i%poly.size()])>EPS){ret.push_back(crosspointLL(poly[i-1],poly[i%poly.size()],p1,p2));}
+        for(int i=0;i<(int)poly.size();i++){
+            int j=(i+1)%poly.size();
+            if(cross(p2-p1,poly[i]-p1)>-EPS){ret.push_back(poly[i]);}
+            if(intersectSL(poly[i],poly[j],p1,p2) &&
+               distLP(p1,p2,poly[i])>EPS && distLP(p1,p2,poly[j])>EPS){
+                ret.push_back(crosspointLL(poly[i],poly[j],p1,p2));
+            }
         }
         return ret;
     }
     
     D area(const vector<P> &poly){
         D ans=0;
-        for(int i=2;i<poly.size();i++){ans+=cross(poly[i-1]-poly[0],poly[i]-poly[0]);}
+        for(int i=2;i<(int)poly.size();i++){
+            ans+=cross(poly[i-1]-poly[0],poly[i]-poly[0]);
+        }
         return abs(ans)/2;
     }
     
     vector<P> convexhull(vector<P> pts){
         vector<P> ret;
         sort(pts.begin(),pts.end(),comp);
-        for(auto &I:pts){
-            if(!ret.empty() && I==ret.back()){continue;}
-            while(ret.size()>=2 && cross(ret.back()-ret[ret.size()-2],I-ret.back())<-EPS){ret.pop_back();}
-            ret.push_back(I);
-        }
+        auto fnc=[&](){
+            for(auto &I:pts){
+                if(!ret.empty() && I==ret.back()){continue;}
+                while(ret.size()>=2 && cross(ret.back()-ret[ret.size()-2],I-ret.back())<-EPS){
+                    ret.pop_back();
+                }
+                ret.push_back(I);
+            }
+        };
+        fnc();
         reverse(pts.begin(),pts.end());
-        for(auto &I:pts){
-            if(!ret.empty() && I==ret.back()){continue;}
-            while(ret.size()>=2 && cross(ret.back()-ret[ret.size()-2],I-ret.back())<-EPS){ret.pop_back();}
-            ret.push_back(I);
-        }
+        fnc();
         if(ret[0]==ret.back()){ret.pop_back();}
         return ret;
     }
@@ -126,7 +174,9 @@ namespace Geometry{
     
     vector<P> crosspointSC(P p1,P p2,C c){
         vector<P> ret;
-        for(auto &I:crosspointLC(p1,p2,c)){if(distSP(p1,p2,I)<EPS){ret.push_back(I);}}
+        for(auto &I:crosspointLC(p1,p2,c)){
+            if(distSP(p1,p2,I)<EPS){ret.push_back(I);}
+        }
         return ret;
     }
     
@@ -141,7 +191,9 @@ namespace Geometry{
         return ret;
     }
     
-    vector<P> tangentCP(C c,P p){return crosspointCC(c,C(p,sqrt(norm(c.F-p)-c.S*c.S)));}
+    vector<P> tangentCP(C c,P p){
+        return crosspointCC(c,C(p,sqrt(norm(c.F-p)-c.S*c.S)));
+    }
     
     vector<pair<P,P>> tangentCC(C c1,C c2){
         vector<pair<P,P>> ret;
@@ -160,7 +212,7 @@ namespace Geometry{
     
     D area(const vector<P> &poly,C c){
         D ret=0;
-        for(int i=0;i<poly.size();i++){
+        for(int i=0;i<(int)poly.size();i++){
             P a=poly[i]-c.F,b=poly[(i+1)%poly.size()]-c.F;
             if(abs(a)<c.S+EPS && abs(b)<c.S+EPS){ret+=cross(a,b);}
             else{
@@ -197,21 +249,28 @@ namespace Geometry{
     D closestpair(vector<P> pt){
         sort(pt.begin(),pt.end(),comp);
         D ret=INF;
-        for(ll i=1;i<pt.size();i<<=1){
-            for(ll j=0;i+j<pt.size();j+=i*2){
-                ll m=i+j;
+        int N=pt.size();
+        for(int i=1;i<N;i<<=1){
+            for(int j=0;i+j<N;j+=i*2){
+                int m=i+j;
                 vector<P> R;
                 D l=-INF,r=INF;
-                for(ll k=j;k<m;k++){l=max(l,pt[k].real());}
-                for(ll k=0;m+k<pt.size() && k<i;k++){r=min(r,pt[m+k].real());}
-                for(ll k=0;m+k<pt.size() && k<i;k++){if(pt[m+k].real()-l<ret){R.push_back(pt[m+k]);}}
-                ll idx=0;
-                for(ll k=j;k<m;k++){
-                    if(r-pt[k].real()>ret){continue;}
-                    while(idx<R.size() && pt[k].imag()-R[idx].imag()>ret){idx++;}
-                    for(ll n=idx;n<R.size() && R[n].imag()-pt[k].imag()<ret;n++){ret=min(ret,abs(R[n]-pt[k]));}
+                for(int k=j;k<m;k++){l=max(l,pt[k].real());}
+                for(int k=0;m+k<N && k<i;k++){r=min(r,pt[m+k].real());}
+                for(int k=0;m+k<N && k<i;k++){
+                    if(pt[m+k].real()-l<ret){R.push_back(pt[m+k]);}
                 }
-                inplace_merge(pt.begin()+j,pt.begin()+m,j+i*2<pt.size()?pt.begin()+j+2*i:pt.end(),[](const P &a,const P &b){return a.imag()==b.imag()?a.real()<b.real():a.imag()<b.imag();});
+                int idx=0;
+                for(int k=j;k<m;k++){
+                    if(r-pt[k].real()>ret){continue;}
+                    int M=R.size();
+                    while(idx<M && pt[k].imag()-R[idx].imag()>ret){idx++;}
+                    for(int s=idx;s<M && R[s].imag()-pt[k].imag()<ret;s++){
+                        ret=min(ret,abs(R[s]-pt[k]));
+                    }
+                }
+                auto ed=(j+i*2<N?pt.begin()+j+2*i:pt.end());
+                inplace_merge(pt.begin()+j,pt.begin()+m,ed,comp_y);
             }
         }
         return ret;
@@ -220,7 +279,7 @@ namespace Geometry{
     P centerofgravity(const vector<P> &pt){
         P ret(0,0);
         D wt=0;
-        for(int i=2;i<pt.size();i++){
+        for(int i=2;i<(int)pt.size();i++){
             D w2=cross(pt[i-1]-pt[0],pt[i]-pt[0]);
             P p=(pt[0]+pt[i-1]+pt[i])/(D)3;
             wt+=w2;
@@ -232,5 +291,7 @@ namespace Geometry{
     istream & operator >> (istream &i,P &p){D x,y; i>>x>>y; p={x,y}; return i;}
     istream & operator >> (istream &i,C &p){D x,y; i>>x>>y>>p.S; p.F={x,y}; return i;}
 };
+
+using namespace Geometry;
 
 #endif /*Geometry_Complex_hpp*/
