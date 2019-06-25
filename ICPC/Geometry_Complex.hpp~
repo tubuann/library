@@ -289,7 +289,7 @@ namespace Geometry{
     }
     
     void segment_arrangement(const vector<pair<P,P>> &L,vector<pair<int,int>> &seg,vector<P> &pt){
-        int N=L.size();
+        int N=(int)L.size();
         for(int i=0;i<N;i++){
             pt.push_back(L[i].F);
             pt.push_back(L[i].S);
