@@ -8,7 +8,7 @@ typedef long long int ll;
 #define F first
 #define S second
 
-namespace Convolusion{
+namespace Convolution{
     /*
      Aのサイズは2^nとなっていること。
      
@@ -88,7 +88,9 @@ namespace Convolusion{
     }
 };
 
-using namespace Convolusion;
+using namespace Convolution;
+
+
 
 namespace Monotone_Minima{
     //argmin(cul(i,*))<=argmin(cul(j,*)) for(i<j)
@@ -96,7 +98,7 @@ namespace Monotone_Minima{
     template<typename T>
     vector<int> argmin(function<T(int,int)> cul,int n,int m,function<bool(T,T)> comp=less<T>()){
         vector<int> ret(n,-1);
-        int i=1;
+        int i=2;
         while(i<n){i<<=1;}
         while(i>>=1){
             for(int j=0;j<n;j+=i){
@@ -110,6 +112,27 @@ namespace Monotone_Minima{
                         ret[j]=k;
                     }
                 }
+            }
+        }
+        return ret;
+    }
+    
+    //f(i,k)+f(j,l)<=f(i,l)+f(j,k) for(i<=j,k<=l)
+    //を満たすn行n列の行列Aに対して、
+    //dp[i]=min_{j<i} dp[j]+A_{i,j}
+    //を求める。
+    template<typename T>
+    vector<T> divide_and_conquer(function<T(int,int)> cul,int n,T e=T(),function<bool(T,T)> comp=less<T>()){
+        vector<T> ret(n,e);
+        for(int i=1;i<n;i++){ret[i]=ret[0]+cul(i,0);}
+        for(int i=1;i<n;i++){
+            int j=i&(-i);
+            int k=i-j;
+            auto fnc=[&](int a,int b){return ret[k+b]+cul(i+a,k+b);};
+            vector<int> am=argmin<T>(fnc,min(j,n-i),j,comp);
+            for(int s=0;s<j && i+s<n;s++){
+                T a=fnc(s,am[s]);
+                if(comp(a,ret[i+s])){ret[i+s]=a;}
             }
         }
         return ret;

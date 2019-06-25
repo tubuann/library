@@ -288,6 +288,62 @@ namespace Geometry{
         return ret/wt;
     }
     
+    void segment_arrangement(const vector<pair<P,P>> &L,vector<pair<int,int>> &seg,vector<P> &pt){
+        int N=(int)L.size();
+        for(int i=0;i<N;i++){
+            pt.push_back(L[i].F);
+            pt.push_back(L[i].S);
+            for(int j=i+1;j<N;j++){
+                if(intersectSS(L[i].F,L[i].S,L[j].F,L[j].S)){
+                    pt.push_back(crosspointSS(L[i].F,L[i].S,L[j].F,L[j].S));
+                }
+            }
+        }
+        auto less=[](P a,P b){return abs(a-b)<EPS?false:comp(a,b);};
+        sort(pt.begin(),pt.end(),less);
+        pt.erase(unique(pt.begin(),pt.end(),[](P a,P b){return abs(a-b)<EPS;}),pt.end());
+        for(auto &I:L){
+            vector<pair<D,int>> on;
+            for(int j=0;j<(int)pt.size();j++){
+                if(distSP(I.F,I.S,pt[j])<EPS){
+                    on.emplace_back(abs(pt[j]-I.F),j);
+                }
+            }
+            sort(on.begin(),on.end());
+            for(int j=1;j<(int)on.size();j++){
+                seg.emplace_back(on[j-1].S,on[j].S);
+            }
+        }
+        sort(seg.begin(),seg.end());
+        seg.erase(unique(seg.begin(),seg.end()),seg.end());
+    }
+    
+    vector<P> convex_of_segments(const vector<pair<P,P>> &L){
+        vector<pair<int,int>> seg;
+        vector<P> pt;
+        segment_arrangement(L,seg,pt);
+        vector<vector<int>> edge(pt.size());
+        for(auto &I:seg){
+            edge[I.F].push_back(I.S);
+            edge[I.S].push_back(I.F);
+        }
+        vector<P> ret;
+        function<void(int,int)> dfs=[&](int v,int pre){
+            if(pre!=-1 && v==0){return;}
+            ret.push_back(pt[v]);
+            vector<pair<D,int>> nx;
+            for(auto &u:edge[v]){
+                D a=arg((pt[u]-pt[v])/(pre==-1 || abs(pt[v]-pt[pre])<EPS?P(1):pt[v]-pt[pre]));
+                if(abs(a+PI)<EPS){a=PI;}
+                nx.emplace_back(a,u);
+            }
+            sort(nx.begin(),nx.end());
+            dfs(nx[0].S,v);
+        };
+        dfs(0,-1);
+        return ret;
+    }
+    
     istream & operator >> (istream &i,P &p){D x,y; i>>x>>y; p={x,y}; return i;}
     istream & operator >> (istream &i,C &p){D x,y; i>>x>>y>>p.S; p.F={x,y}; return i;}
 };
