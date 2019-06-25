@@ -26,6 +26,8 @@ namespace Geometry{
         return p1.imag()<p2.imag();
     }
     
+    static bool eqls(const P &p1,const P &p2){return abs(p1-p2)<EPS;}
+    
     D dot(P p1,P p2){return p1.real()*p2.real()+p1.imag()*p2.imag();}
     
     D cross(P p1,P p2){return p1.real()*p2.imag()-p1.imag()*p2.real();}
@@ -299,9 +301,9 @@ namespace Geometry{
                 }
             }
         }
-        auto less=[](P a,P b){return abs(a-b)<EPS?false:comp(a,b);};
-        sort(pt.begin(),pt.end(),less);
-        pt.erase(unique(pt.begin(),pt.end(),[](P a,P b){return abs(a-b)<EPS;}),pt.end());
+        auto le=[](P a,P b){return eqls(a,b)?false:comp(a,b);};
+        sort(pt.begin(),pt.end(),le);
+        pt.erase(unique(pt.begin(),pt.end(),eqls),pt.end());
         for(auto &I:L){
             vector<pair<D,int>> on;
             for(int j=0;j<(int)pt.size();j++){
@@ -333,7 +335,7 @@ namespace Geometry{
             ret.push_back(pt[v]);
             vector<pair<D,int>> nx;
             for(auto &u:edge[v]){
-                D a=arg((pt[u]-pt[v])/(pre==-1 || abs(pt[v]-pt[pre])<EPS?P(1):pt[v]-pt[pre]));
+                D a=arg((pt[u]-pt[v])/(pre==-1 || eqls(pt[v],pt[pre])?P(1):pt[v]-pt[pre]));
                 if(abs(a+PI)<EPS){a=PI;}
                 nx.emplace_back(a,u);
             }
@@ -349,5 +351,6 @@ namespace Geometry{
 };
 
 using namespace Geometry;
+
 
 #endif /*Geometry_Complex_hpp*/
