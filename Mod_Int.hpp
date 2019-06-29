@@ -136,7 +136,7 @@ struct Mod_Int{
 };
 
 template<long long MOD>istream & operator >> (istream &i,Mod_Int<MOD> &A){ll a; cin>>a; A=Mod_Int<MOD>(a); return i;}
-template<long long MOD>ostream & operator << (ostream &i,Mod_Int<MOD> &A){i<<A.a; return i;}
+template<long long MOD>ostream & operator << (ostream &i,const Mod_Int<MOD> &A){i<<A.a; return i;}
 
 
 #endif /*Mod_Int_hpp*/

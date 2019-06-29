@@ -141,4 +141,52 @@ namespace Monotone_Minima{
 
 using namespace Monotone_Minima;
 
+
+
+namespace Polynomial{
+    /*
+     A,Bのサイズは2^nとなっていること
+     f(x)=sum_{0<=i<2^n} A_i x^i
+     */
+    
+    //T[x]/(x^(2^n)-1)上で、A*Bを求める。
+    //rは1の原始2^n乗根
+    template<typename T>
+    vector<T> mul(const vector<T> &A,const vector<T> &B,int n,T r){
+        T inv=1;
+        for(int i=1;i<1<<n;i++){inv*=r;}
+        vector<T> f=fourier(A,n,r);
+        vector<T> g=fourier(B,n,r);
+        for(int i=0;i<1<<n;i++){f[i]*=g[i];}
+        f=fourier(f,n,inv);
+        for(auto &I:f){I/=1<<n;}
+        return f;
+    }
+    
+    //T[x]/(x^(2^n))上で、A*B=1となる多項式Bを求める。
+    //A[0]!=0,rは1の原始2^(n+1)乗根
+    template<typename T>
+    vector<T> inv(const vector<T> &A,int n,T r){
+        vector<T> ret={T(1)/A[0],T(0)};
+        vector<T> f={A[0],T(0)};
+        vector<T> exp(n+2,r);
+        for(int i=n;i>=0;i--){exp[i]=exp[i+1]*exp[i+1];}
+        for(int i=0;i<n;i++){
+            f.resize(4<<i,T(0));
+            ret.resize(4<<i,T(0));
+            for(int j=1<<i;j<2<<i;j++){f[j]=A[j];}
+            vector<T> nx=mul(mul(ret,ret,i+2,exp[i+2]),f,i+2,exp[i+2]);
+            for(auto &I:nx){I=T(0)-I;}
+            for(int j=0;j<1<<i;j++){nx[j]+=ret[j]+ret[j];}
+            for(int j=2<<i;j<4<<i;j++){nx[j]=0;}
+            swap(nx,ret);
+        }
+        ret.resize(1<<n);
+        return ret;
+    }
+};
+
+using namespace Polynomial;
+
+
 #endif /*Function_hpp*/
