@@ -14,7 +14,7 @@ void start(){Start=chrono::system_clock::now();}
 
 double end(){
   End=chrono::system_clock::now();
-  double diff=chrono::duration_cast<chrono::milliseconds>(End-Start).count();;
+  double diff=chrono::duration_cast<chrono::milliseconds>(End-Start).count();
   return diff;
 }
 

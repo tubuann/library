@@ -56,7 +56,7 @@ public:
     }
     
     ll c(ll n,ll k){
-        if(n<k){return 0;}
+        if(n<k || k<0 || n<0){return 0;}
         if(n==k || k==0){return 1;}
         return F[n]*FR[n-k]%mod*FR[k]%mod;
     }

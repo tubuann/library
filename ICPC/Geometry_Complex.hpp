@@ -3,11 +3,11 @@
 
 #include<bits/stdc++.h>
 using namespace std;
-#define F first
-#define S second
 typedef long long ll;
 
 namespace Geometry{
+#define F first
+#define S second
     typedef long double D;
     typedef complex<long double> P;
     typedef pair<P,D> C;
@@ -137,9 +137,13 @@ namespace Geometry{
         sort(pts.begin(),pts.end(),comp);
         auto fnc=[&](){
             for(auto &I:pts){
-                if(!ret.empty() && I==ret.back()){continue;}
-                while(ret.size()>=2 && cross(ret.back()-ret[ret.size()-2],I-ret.back())<-EPS){
-                    ret.pop_back();
+                if(!ret.empty() && abs(I-ret.back())<EPS){continue;}
+                while(ret.size()>1){
+                    P A=ret.back()-ret[ret.size()-2];
+                    P B=I-ret.back();
+                    if(cross(A,B)<-EPS){ret.pop_back();}
+                    else if(abs(cross(A,B))<EPS && dot(A,B)>EPS){ret.pop_back();}
+                    else{break;}
                 }
                 ret.push_back(I);
             }
@@ -147,7 +151,7 @@ namespace Geometry{
         fnc();
         reverse(pts.begin(),pts.end());
         fnc();
-        if(ret[0]==ret.back()){ret.pop_back();}
+        if(ret.size()>1 && ret[0]==ret.back()){ret.pop_back();}
         return ret;
     }
     
