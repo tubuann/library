@@ -34,8 +34,13 @@ int main(){
         P a={x1,y1};
         poly.push_back(a);
     }
-    poly=convexhull(poly);
-    cout<<(n==(int)poly.size())<<endl;
+    poly.push_back(P(pol[0]));
+    poly.push_back(P(pol[1]));
+    bool jd=true;
+    for(int i=1;i+1<(int)poly.size();i++){
+      jd&=cross(poly[i]-poly[i-1],poly[i+1]-poly[i])>EPS;
+    }
+    cout<<jd<<endl;
     
     return 0;
 }
