@@ -19,7 +19,7 @@ template<typename T,typename U>ostream & operator << (ostream &o,const pair<T,U>
 template<typename T>ostream & operator << (ostream &o,const vector<T> &A){ll i=A.size(); for(auto &I:A){o<<I<<(--i?" ":"");} return o;}
 
 #define PROBLEM "http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=CGL_2_B"
-#define EORROR "0.00000001"
+//#define EORROR "0.00000001"
 
 
 int main(){
