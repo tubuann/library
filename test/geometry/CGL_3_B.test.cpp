@@ -38,7 +38,7 @@ int main(){
     poly.push_back(P(poly[1]));
     bool jd=true;
     for(int i=1;i+1<(int)poly.size();i++){
-      jd&=cross(poly[i]-poly[i-1],poly[i+1]-poly[i])>EPS;
+      jd&=cross(poly[i]-poly[i-1],poly[i+1]-poly[i])>-EPS;
     }
     cout<<jd<<endl;
     
