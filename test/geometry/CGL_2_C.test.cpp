@@ -29,7 +29,8 @@ int main(){
     while(n--){
         P p1,p2,p3,p4;
         cin>>p1>>p2>>p3>>p4;
-        cout<<intersectSS(p1,p2,p3,p4)<<endl;
+        P ans=crosspointSS(p1,p2,p3,p4);
+        cout<<ans.real()<<" "<<ans.imag()<<endl;
     }
     
     return 0;

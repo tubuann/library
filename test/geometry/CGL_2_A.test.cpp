@@ -21,13 +21,22 @@ template<typename T>ostream & operator << (ostream &o,const vector<T> &A){ll i=A
 #define PROBLEM "http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=CGL_2_A"
 
 int main(){
-    cout<<fixed<<setprecision(12);
-    ll n;
-    cin>>n;
-    while(n--){
-        P p1,p2,p3,p4;
-        cin>>p1>>p2>>p3>>p4;
-        cout<<intersectSS(p1,p2,p3,p4)<<endl;
+    Geometry<ll> G;
+    ll q;
+    cin>>q;
+    while(q--){
+    ll x,y;
+    ll xd,yd;
+    cin>>x>>y>>xd>>yd;
+    x-=xd;
+    y-=yd;
+    ll x2,y2;
+    cin>>x2>>y2>>xd>>yd;
+    x2-=xd;
+    y2-=yd;
+    if(G.dot({x,y},{x2,y2})==0){cout<<1<<endl;}
+    else if(G.cross({x,y},{x2,y2})==0){cout<<2<<endl;}
+    else{cout<<0<<endl;}
     }
     
     return 0;

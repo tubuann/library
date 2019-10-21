@@ -28,7 +28,8 @@ int main(){
     while(n--){
         P p1,p2,p3,p4;
         cin>>p1>>p2>>p3>>p4;
-        cout<<intersectSS(p1,p2,p3,p4)<<endl;
+        auto ans=distSS(p1,p2,p3,p4);
+        cout<<ans<<endl;
     }
     
     return 0;
