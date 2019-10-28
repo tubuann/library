@@ -18,14 +18,17 @@ template<typename T>istream & operator >> (istream &i,vector<T> &A){for(auto &I:
 template<typename T,typename U>ostream & operator << (ostream &o,const pair<T,U> &A){o<<A.F<<" "<<A.S; return o;}
 template<typename T>ostream & operator << (ostream &o,const vector<T> &A){ll i=A.size(); for(auto &I:A){o<<I<<(--i?" ":"");} return o;}
 
-#define PROBLEM "http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=CGL_7_A"
-//#define ERROR "0.00000001"
+#define PROBLEM "http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=CGL_7_H"
+#define ERROR "0.00001"
 
 int main(){
     cout<<fixed<<setprecision(12);
-    pair<P,D> c1,c2;
-    cin>>c1>>c2;
-    cout<<intersectCC(c1,c2)<<endl;
+    ll n;
+    pair<P,D> c={{0,0},0};
+    cin>>n>>c.S;
+    vector<P> poly(n);
+    for(auto &I:poly){cin>>I;}
+    cout<<fixed<<setprecision(12)<<area(poly,c)<<endl;
     
     return 0;
 }
