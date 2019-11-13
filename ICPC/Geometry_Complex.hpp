@@ -269,6 +269,22 @@ namespace Geometry{
     return abs(ret)/2;
   }
 
+  D area(C c1,C c2){
+    int a=intersectCC(c1,c2);
+    if(a>2){return 0;}
+    else if(a<2){
+      D mi=min(c1.S,c2.S);
+      return mi*mi*PI;
+    }
+    D ret=0,d=abs(c1.F-c2.F);
+    for(int i=0;i<2;i++){
+      D ag=acos((d*d+c1.S*c1.S-c2.S*c2.S)/(2*d*c1.S))*2;
+      ret+=(ag-sin(ag))*c1.S*c1.S/2;
+      swap(c1,c2);
+    }
+    return ret;
+  }
+
   //counter-clockwise
   D diameter(const vector<P> &poly){
     D ret=0;
